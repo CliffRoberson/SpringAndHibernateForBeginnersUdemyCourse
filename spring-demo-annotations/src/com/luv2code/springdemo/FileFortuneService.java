@@ -7,36 +7,38 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class FileFortuneService implements FortuneService {
 
-private Random myRandom = new Random();
+	private Random myRandom = new Random();
 	
+	List<String> fortunes = new ArrayList<String>();
+
+	//define my init method
+	@PostConstruct
+	public void readInFortunes() {
+		
+		try {
+			Scanner sc = new Scanner(new File("Fortunes"));
+				
+			while (sc.hasNextLine()) {
+			  fortunes.add(sc.nextLine());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}		
+	}
+
 	@Override
 	public String getFortune() {
-
-		Scanner sc;
-		List<String> lines = new ArrayList<String>();
-		try {
-			sc = new Scanner(new File("Fortunes"));
 		
+		int index = myRandom.nextInt(fortunes.size());
 		
-		while (sc.hasNextLine()) {
-		  lines.add(sc.nextLine());
-		}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String[] arr = lines.toArray(new String[0]);
-		
-		int index = myRandom.nextInt(arr.length);
-		
-		String theFortune = arr[index];		
-		
-		return theFortune;
+		return fortunes.get(index);				
 	}
 
 }
